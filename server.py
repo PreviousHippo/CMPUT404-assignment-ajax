@@ -22,7 +22,7 @@
 
 
 import flask
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request, redirect
 import json
 app = Flask(__name__)
 app.debug = True
@@ -55,7 +55,7 @@ class World:
         return self.space
 
 # you can test your webservice from the commandline
-# curl -v   -H "Content-Type: appication/json" -X PUT http://127.0.0.1:5000/entity/X -d '{"x":1,"y":1}'
+# curl -v -H "Content-Type: appication/json" -X PUT http://127.0.0.1:5000/entity/X -d '{"x":1,"y":1}'
 
 myWorld = World()
 
@@ -74,17 +74,17 @@ def flask_post_json():
 @app.route("/")
 def hello():
     '''Return something coherent here.. perhaps redirect to /static/index.html '''
-    return redirect('/static/index.html')
-
+    return app.send_static_file('index.html')
 
 @app.route("/entity/<entity>", methods=['POST','PUT'])
 def update(entity):
     '''update the entities via this interface'''
-    # https://docs.python.org/2.7/library/json.html
-    myWorld.set(entity, flask_post_json())
+    # json.dumps
+    #https://docs.python.org/3/library/json.html
+    #http://liuzhijun.iteye.com/blog/1859857
+    data = flask_post_json()
+    myWorld.set(entity, data)
     return json.dumps(myWorld.get(entity))
-
-
 
 @app.route("/world", methods=['POST','GET'])
 def world():
